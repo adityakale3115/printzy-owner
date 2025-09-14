@@ -1,57 +1,75 @@
 .order-list {
-  max-width: 1000px;
-  margin: 30px auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 25px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  font-family: "Inter", sans-serif;
 }
 
 .order-list h2 {
   text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+  margin-bottom: 25px;
+  color: #222;
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
 .order-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 10px;
 }
 
 .order-table th, .order-table td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #eee;
+  padding: 14px 16px;
   text-align: left;
 }
 
 .order-table th {
-  background: #f7f7f7;
-  color: #444;
+  background: #f4f6fa;
+  color: #333;
   font-weight: 600;
+  font-size: 0.95rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.order-table tr {
+  background: #fff;
+  transition: all 0.2s ease-in-out;
+  border-radius: 10px;
 }
 
 .order-table tr:hover {
-  background: #fafafa;
+  background: #f9fbff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-a.link {
+.order-table td {
+  font-size: 0.9rem;
+  color: #444;
+  border-bottom: 1px solid #eee;
+}
+
+a.link, .order-table a {
   color: #0077ff;
   text-decoration: none;
   font-weight: 500;
 }
 
-a.link:hover {
+a.link:hover, .order-table a:hover {
   text-decoration: underline;
 }
 
 /* Buttons */
 .btn {
-  padding: 8px 14px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  transition: 0.2s;
+  transition: all 0.2s ease;
 }
 
 .btn.primary { background: #0077ff; color: #fff; }
@@ -63,28 +81,16 @@ a.link:hover {
 .btn.danger { background: #dc3545; color: #fff; }
 .btn.danger:hover { background: #b52a37; }
 
-/* Status badges */
-.status-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.status-badge.pending { background: #ffe08a; color: #664d00; }
-.status-badge.completed { background: #c3f0c8; color: #1c6330; }
-
 /* Status text */
 .status {
   text-align: center;
   margin-top: 20px;
   color: #444;
+  font-size: 0.95rem;
 }
 
 .status.error {
-  color: red;
+  color: #e63946;
 }
 
 /* Modal */
@@ -92,35 +98,41 @@ a.link:hover {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.45);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 }
 
 .modal {
   background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  width: 400px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  padding: 25px;
+  border-radius: 14px;
+  width: 420px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
   text-align: center;
 }
 
 .modal h3 {
-  margin-bottom: 15px;
+  margin-bottom: 18px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
 }
 
 .modal select {
   width: 100%;
-  padding: 10px;
-  border-radius: 6px;
+  padding: 12px;
+  border-radius: 8px;
   border: 1px solid #ccc;
+  margin-top: 10px;
+  font-size: 0.95rem;
 }
 
 .modal-actions {
   margin-top: 20px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
 }

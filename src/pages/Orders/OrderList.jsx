@@ -4,11 +4,11 @@ import {
   getDocs,
   doc,
   deleteDoc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { getStorage, ref, deleteObject } from "firebase/storage";
 import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
 import "./Orders.css";
 
 function OrderList() {
@@ -20,7 +20,7 @@ function OrderList() {
   const [selectedPrinter, setSelectedPrinter] = useState("");
   const [printingOrder, setPrintingOrder] = useState(null);
 
-  // 🔹 Fetch orders from Firestore
+  // 🔹 Fetch orders with user details
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
@@ -41,12 +41,31 @@ function OrderList() {
 
         const shopId = shopDoc.id;
 
-        // Fetch orders (no timestamp)
+        // Fetch orders
         const ordersSnap = await getDocs(collection(db, "shops", shopId, "orders"));
-        const orderList = ordersSnap.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const orderList = await Promise.all(
+          ordersSnap.docs.map(async (docSnap) => {
+            const orderData = { id: docSnap.id, ...docSnap.data() };
+
+            // 🔹 fetch user details from "users" collection
+            if (orderData.userId) {
+              try {
+                const userRef = doc(db, "users", orderData.userId);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                  const userData = userSnap.data();
+                  orderData.name = userData.name || "N/A";
+                  orderData.phone = userData.phone || "N/A";
+                  orderData.email = userData.email || "N/A";
+                }
+              } catch (err) {
+                console.error("⚠️ Failed to fetch user:", err);
+              }
+            }
+
+            return orderData;
+          })
+        );
 
         console.log("📦 Orders fetched:", orderList);
         setOrders(orderList);
@@ -64,7 +83,7 @@ function OrderList() {
   // 🔹 Fetch printers from backend
   const fetchPrinters = async () => {
     try {
-      const res = await fetch("http://localhost:5000/printers");
+      const res = await fetch("https://pritzy-owner-g3tx.vercel.app/printers");
       const data = await res.json();
       setPrinters(data);
     } catch (err) {
@@ -80,24 +99,22 @@ function OrderList() {
     await fetchPrinters();
   };
 
-// 🔹 Confirm print
-const handleConfirmPrint = async () => {
-  if (!selectedPrinter || !printingOrder) return;
-  try {
-    // 1. Send print job to backend
-    await fetch("http://localhost:5000/print", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        printerId: selectedPrinter,
-       order: printingOrder,
-       order: {
-         ...printingOrder,
-         duplex: printingOrder.options?.sides === "Double", // 👈 pass duplex info
-       },
-      }),
-    });
-
+  // 🔹 Confirm print
+  const handleConfirmPrint = async () => {
+    if (!selectedPrinter || !printingOrder) return;
+    try {
+      // 1. Send print job to backend
+      await fetch("https://pritzy-owner-g3tx.vercel.app/print", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          printerId: selectedPrinter,
+          order: {
+            ...printingOrder,
+            duplex: printingOrder.options?.sides === "Double",
+          },
+        }),
+      });
 
       // 2. Delete order from Firestore
       const shopDocs = await getDocs(collection(db, "ownerShops"));
@@ -121,13 +138,29 @@ const handleConfirmPrint = async () => {
       alert("✅ Print job completed!");
       setPrintingOrder(null);
 
-      // Refresh orders
+      // Refresh orders after deletion
       const shopDocsAfter = await getDocs(collection(db, "ownerShops"));
       const shopDocAfter = shopDocsAfter.docs.find((doc) => doc.id === currentUser.uid);
       if (shopDocAfter) {
         const shopId = shopDocAfter.id;
         const ordersSnap = await getDocs(collection(db, "shops", shopId, "orders"));
-        setOrders(ordersSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        const orderList = await Promise.all(
+          ordersSnap.docs.map(async (docSnap) => {
+            const orderData = { id: docSnap.id, ...docSnap.data() };
+            if (orderData.userId) {
+              const userRef = doc(db, "users", orderData.userId);
+              const userSnap = await getDoc(userRef);
+              if (userSnap.exists()) {
+                const userData = userSnap.data();
+                orderData.name = userData.name || "N/A";
+                orderData.phone = userData.phone || "N/A";
+                orderData.email = userData.email || "N/A";
+              }
+            }
+            return orderData;
+          })
+        );
+        setOrders(orderList);
       }
     } catch (err) {
       console.error("Error completing print job:", err);
@@ -146,17 +179,19 @@ const handleConfirmPrint = async () => {
       <table className="order-table">
         <thead>
           <tr>
-            <th>User</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
             <th>File</th>
             <th>Options</th>
-            <th>Status</th>
-            <th>Details</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {orders.map((order) => (
             <tr key={order.id}>
+              <td>{order.name || "N/A"}</td>
+              <td>{order.phone || "N/A"}</td>
               <td>{order.email || "N/A"}</td>
               <td>
                 <a href={order.fileURL} target="_blank" rel="noreferrer">
@@ -168,14 +203,6 @@ const handleConfirmPrint = async () => {
                   ? `${order.options.color || "B/W"}, ${order.options.copies || 1
                     } copies, ${order.options.sides || "Single"}`
                   : "N/A"}
-              </td>
-              <td>
-                <span className={`status-badge ${order.status || "pending"}`}>
-                  {order.status || "Pending"}
-                </span>
-              </td>
-              <td>
-                <Link to={`/orders/${order.id}`} className="link">View</Link>
               </td>
               <td>
                 <button
@@ -218,7 +245,10 @@ const handleConfirmPrint = async () => {
               >
                 Confirm Print
               </button>
-              <button className="btn danger" onClick={() => setPrintingOrder(null)}>
+              <button
+                className="btn danger"
+                onClick={() => setPrintingOrder(null)}
+              >
                 Cancel
               </button>
             </div>
