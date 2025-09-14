@@ -1,0 +1,126 @@
+.order-list {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.order-list h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.order-table th, .order-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.order-table th {
+  background: #f7f7f7;
+  color: #444;
+  font-weight: 600;
+}
+
+.order-table tr:hover {
+  background: #fafafa;
+}
+
+a.link {
+  color: #0077ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a.link:hover {
+  text-decoration: underline;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.btn.primary { background: #0077ff; color: #fff; }
+.btn.primary:hover { background: #005fcc; }
+
+.btn.success { background: #28a745; color: #fff; }
+.btn.success:hover { background: #218838; }
+
+.btn.danger { background: #dc3545; color: #fff; }
+.btn.danger:hover { background: #b52a37; }
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.pending { background: #ffe08a; color: #664d00; }
+.status-badge.completed { background: #c3f0c8; color: #1c6330; }
+
+/* Status text */
+.status {
+  text-align: center;
+  margin-top: 20px;
+  color: #444;
+}
+
+.status.error {
+  color: red;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.modal h3 {
+  margin-bottom: 15px;
+}
+
+.modal select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
