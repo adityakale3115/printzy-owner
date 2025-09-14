@@ -24,7 +24,7 @@ app.get("/printers", async (req, res) => {
     })));
   } catch (err) {
     console.error("❌ Failed to list printers:", err);
-    res.status(500).json({ error: "Failed to fetch printers" });
+    res.status(500).json({ error: "Failed to fetch printers" + err });
   }
 });
 
