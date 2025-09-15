@@ -26,7 +26,7 @@ function Login() {
       <div className="auth-left">
         <h1 className="brand-title">Printzy</h1>
         <p className="brand-tagline">
-          Simplifying life for Print Shop Owners 🚀  
+          Simplifying life for Print Shop Owners 🚀
         </p>
         <img
           src="https://cdni.iconscout.com/illustration/premium/thumb/printing-shop-illustration-download-in-svg-png-gif-file-formats--office-equipment-business-industry-pack-illustrations-5102739.png"

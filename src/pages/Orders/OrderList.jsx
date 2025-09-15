@@ -83,7 +83,7 @@ function OrderList() {
   // 🔹 Fetch printers from backend
   const fetchPrinters = async () => {
     try {
-      const res = await fetch("https://pritzy-owner-g3tx.vercel.app/printers");
+      const res = await fetch("http://localhost:5000/printers");
       const data = await res.json();
       setPrinters(data);
     } catch (err) {
@@ -104,7 +104,7 @@ function OrderList() {
     if (!selectedPrinter || !printingOrder) return;
     try {
       // 1. Send print job to backend
-      await fetch("https://pritzy-owner-g3tx.vercel.app/print", {
+      await fetch("http://localhost:5000/print", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
