@@ -34,14 +34,28 @@ function Home() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="profile-input"
               />
-              <button onClick={handleProfileSave} className="save-btn">Save</button>
-              <button onClick={() => setEditingProfile(false)} className="cancel-btn">Cancel</button>
+              <button onClick={handleProfileSave} className="save-btn">
+                Save
+              </button>
+              <button
+                onClick={() => setEditingProfile(false)}
+                className="cancel-btn"
+              >
+                Cancel
+              </button>
             </div>
           ) : (
             <>
               <span className="user-email">{email}</span>
-              <button onClick={() => setEditingProfile(true)} className="edit-btn">Edit Profile</button>
-              <button className="logout-btn" onClick={handleLogout}>Logout</button>
+              <button
+                onClick={() => setEditingProfile(true)}
+                className="edit-btn"
+              >
+                Edit Profile
+              </button>
+              <button className="logout-btn" onClick={handleLogout}>
+                Logout
+              </button>
             </>
           )}
         </div>
@@ -50,25 +64,32 @@ function Home() {
       {/* Main Content */}
       <main className="dashboard-main">
         <h2>Welcome Back, {currentUser?.email.split("@")[0]} 👋</h2>
-        <p className="subtitle">Manage your shop, orders, and printing workflow efficiently.</p>
+        <p className="subtitle">
+          Manage your shop, orders, and printing workflow efficiently.
+        </p>
 
         <div className="cards-container">
-          <div className="card">
+          <div className="card orders-card">
             <h3>📄 Orders</h3>
             <p>View and manage all incoming print orders seamlessly.</p>
-            <Link to="/orders" className="card-btn">Go to Orders</Link>
+            <Link to="/orders" className="card-btn">
+              Go to Orders
+            </Link>
           </div>
 
-          <div className="card">
+          <div className="card printers-card">
             <h3>🖨️ Printers</h3>
             <p>Check connected printers and manage printing jobs.</p>
             <button className="card-btn">Manage Printers</button>
           </div>
 
-          <div className="card">
-            <h3>⚙️ Settings</h3>
-            <p>Update shop details and personalize preferences.</p>
-            <button className="card-btn">Go to Settings</button>
+          
+
+          <div className="card income-card">
+            <h3>💰 Income (Last 30 days)</h3>
+            <p className="income-amount">₹5,200</p>
+            <p className="income-subtext">Based on completed orders</p>
+            <button className="card-btn">View Report</button>
           </div>
         </div>
       </main>
