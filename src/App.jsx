@@ -6,6 +6,8 @@ import Signup from "./pages/Auth/Signup";
 import Home from "./pages/Home";
 import OrderList from "./pages/Orders/OrderList";
 import OrderDetails from "./pages/Orders/OrderDetails";
+import Transactions from "./pages/Transactions";
+import Profile from "./pages/Profile.jsx";
 
 function PrivateRoute({ children }) {
   const { currentUser } = useAuth();
@@ -19,6 +21,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+
           <Route
             path="/"
             element={
@@ -40,6 +43,22 @@ function App() {
             element={
               <PrivateRoute>
                 <OrderDetails />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/transactions"
+            element={
+              <PrivateRoute>
+                <Transactions />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
               </PrivateRoute>
             }
           />

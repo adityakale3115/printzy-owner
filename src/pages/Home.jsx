@@ -1,23 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import { useAuth } from "../pages/context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import { FaUserCircle } from "react-icons/fa";
 import "./Home.css";
 
 function Home() {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
-  const [editingProfile, setEditingProfile] = useState(false);
-  const [email, setEmail] = useState(currentUser?.email);
 
   const handleLogout = async () => {
     await logout();
     navigate("/login");
-  };
-
-  const handleProfileSave = () => {
-    // Here you can call a function to update the user profile in Firebase
-    console.log("Profile updated:", email);
-    setEditingProfile(false);
   };
 
   return (
@@ -26,38 +19,13 @@ function Home() {
       <header className="dashboard-header">
         <div className="logo">Printzy Owner Dashboard</div>
         <div className="profile-section">
-          {editingProfile ? (
-            <div className="profile-edit">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="profile-input"
-              />
-              <button onClick={handleProfileSave} className="save-btn">
-                Save
-              </button>
-              <button
-                onClick={() => setEditingProfile(false)}
-                className="cancel-btn"
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <>
-              <span className="user-email">{email}</span>
-              <button
-                onClick={() => setEditingProfile(true)}
-                className="edit-btn"
-              >
-                Edit Profile
-              </button>
-              <button className="logout-btn" onClick={handleLogout}>
-                Logout
-              </button>
-            </>
-          )}
+          {/* Profile Icon Redirect */}
+          <Link to="/profile" className="profile-icon">
+            <FaUserCircle size={28} />
+          </Link>
+          <button className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
         </div>
       </header>
 
@@ -83,13 +51,13 @@ function Home() {
             <button className="card-btn">Manage Printers</button>
           </div>
 
-          
-
           <div className="card income-card">
             <h3>💰 Income (Last 30 days)</h3>
             <p className="income-amount">₹5,200</p>
             <p className="income-subtext">Based on completed orders</p>
-            <button className="card-btn">View Report</button>
+            <Link to="/transactions">
+              <button className="card-btn">💰 Income Report</button>
+            </Link>
           </div>
         </div>
       </main>

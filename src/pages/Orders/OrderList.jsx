@@ -25,28 +25,25 @@ function OrderList() {
     setLoading(true);
     setError("");
     try {
-      console.log("🔎 Fetching orders for user:", currentUser?.uid);
-
-      // Get owner's shop
       const shopDocs = await getDocs(collection(db, "ownerShops"));
       const shopDoc = shopDocs.docs.find((doc) => doc.id === currentUser.uid);
 
       if (!shopDoc) {
-        console.warn("⚠️ No shop found for owner:", currentUser.uid);
         setOrders([]);
         setLoading(false);
         return;
       }
 
       const shopId = shopDoc.id;
+      const ordersSnap = await getDocs(
+        collection(db, "shops", shopId, "orders")
+      );
 
-      // Fetch orders
-      const ordersSnap = await getDocs(collection(db, "shops", shopId, "orders"));
       const orderList = await Promise.all(
         ordersSnap.docs.map(async (docSnap) => {
           const orderData = { id: docSnap.id, ...docSnap.data() };
 
-          // 🔹 fetch user details from "users" collection
+          // fetch user details
           if (orderData.userId) {
             try {
               const userRef = doc(db, "users", orderData.userId);
@@ -66,7 +63,12 @@ function OrderList() {
         })
       );
 
-      console.log("📦 Orders fetched:", orderList);
+      // sort latest first
+      orderList.sort((a, b) => {
+        if (!a.createdAt || !b.createdAt) return 0;
+        return b.createdAt.seconds - a.createdAt.seconds;
+      });
+
       setOrders(orderList);
     } catch (err) {
       console.error("❌ Error fetching orders:", err);
@@ -103,7 +105,6 @@ function OrderList() {
   const handleConfirmPrint = async () => {
     if (!selectedPrinter || !printingOrder) return;
     try {
-      // 1. Send print job to backend
       await fetch("http://localhost:5000/print", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -116,7 +117,7 @@ function OrderList() {
         }),
       });
 
-      // 2. Delete order from Firestore
+      // delete order from Firestore
       const shopDocs = await getDocs(collection(db, "ownerShops"));
       const shopDoc = shopDocs.docs.find((doc) => doc.id === currentUser.uid);
 
@@ -124,21 +125,17 @@ function OrderList() {
         const shopId = shopDoc.id;
         const orderRef = doc(db, "shops", shopId, "orders", printingOrder.id);
         await deleteDoc(orderRef);
-        console.log("✅ Deleted order:", printingOrder.id);
       }
 
-      // 3. Delete file from Firebase Storage
+      // delete file from Storage
       if (printingOrder.filePath) {
         const storage = getStorage();
         const fileRef = ref(storage, printingOrder.filePath);
         await deleteObject(fileRef);
-        console.log("✅ Deleted file:", printingOrder.filePath);
       }
 
       alert("✅ Print job completed!");
       setPrintingOrder(null);
-
-      // Refresh orders after deletion
       await fetchOrders();
     } catch (err) {
       console.error("Error completing print job:", err);
@@ -146,28 +143,28 @@ function OrderList() {
     }
   };
 
+  // 🔹 calculate total amount to be collected
+const totalAmount = orders.reduce((sum, order) => sum + (order.cost || 0), 0);
+
+
   // 🔹 Delete order manually
   const handleDeleteOrder = async (order) => {
     try {
-      if (!window.confirm("Are you sure you want to delete this order?")) return;
+      if (!window.confirm("Are you sure you want to delete this order?"))
+        return;
 
       const shopDocs = await getDocs(collection(db, "ownerShops"));
       const shopDoc = shopDocs.docs.find((doc) => doc.id === currentUser.uid);
 
       if (shopDoc) {
         const shopId = shopDoc.id;
-
-        // Delete Firestore order
         const orderRef = doc(db, "shops", shopId, "orders", order.id);
         await deleteDoc(orderRef);
-        console.log("🗑️ Deleted order:", order.id);
 
-        // Delete file from Firebase Storage
         if (order.filePath) {
           const storage = getStorage();
           const fileRef = ref(storage, order.filePath);
           await deleteObject(fileRef);
-          console.log("🗑️ Deleted file:", order.filePath);
         }
 
         alert("✅ Order deleted successfully!");
@@ -186,57 +183,74 @@ function OrderList() {
 
   return (
     <div className="order-list">
-      <h2>Incoming Orders</h2>
-      <table className="order-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Email</th>
-            <th>File</th>
-            <th>Options</th>
-            <th>Action</th>
-            <th>Delete</th> {/* 👈 New column */}
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <tr key={order.id}>
-              <td>{order.name || "N/A"}</td>
-              <td>{order.phone || "N/A"}</td>
-              <td>{order.email || "N/A"}</td>
-              <td>
-                <a href={order.fileURL} target="_blank" rel="noreferrer">
-                  {order.fileName || "N/A"}
-                </a>
-              </td>
-              <td>
-                {order.options
-                  ? `${order.options.color || "B/W"}, ${
-                      order.options.copies || 1
-                    } copies, ${order.options.sides || "Single"}`
-                  : "N/A"}
-              </td>
-              <td>
-                <button
-                  className="btn primary"
-                  onClick={() => handlePrintClick(order)}
-                >
-                  Print
-                </button>
-              </td>
-              <td>
-                <button
-                  className="btn danger"
-                  onClick={() => handleDeleteOrder(order)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h2>🖨️ Printzy Orders</h2>
+<table className="order-table">
+  <thead>
+    <tr>
+      <th>Sr No</th>
+      <th>Name</th>
+      <th>Phone</th>
+      <th>Email</th>
+      <th>File</th>
+      <th>Pages</th>
+      <th>Copies / Sides</th> {/* merged column */}
+      <th>Services</th> {/* ✅ new column */}
+      <th>Cost</th>
+      <th>Action</th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+  {orders.map((order, index) => {
+    const isDocx =
+      order.fileName?.endsWith(".doc") || order.fileName?.endsWith(".docx");
+
+    return (
+      <tr
+        key={order.id}
+        style={{ backgroundColor: isDocx ? "#fff4e5" : "transparent" }}
+      >
+        <td>{index + 1}</td>
+        <td>{order.name || "N/A"}</td>
+        <td>{order.phone || "N/A"}</td>
+        <td>{order.email || "N/A"}</td>
+        <td>
+          <a href={order.fileURL} target="_blank" rel="noreferrer">
+            {order.fileName || "N/A"}
+          </a>
+        </td>
+        <td>{order.pages || "-"}</td>
+        <td>
+          {order.options?.copies || "-"} / {order.options?.sides || "-"}
+        </td>
+
+        {/* ✅ New Services Column */}
+        <td>
+  {order.additionalServices && order.additionalServices.length > 0
+    ? order.additionalServices.map((s, i) => (
+        <div key={i}>{s}</div>
+      ))
+    : "-"}
+</td>
+
+
+        <td>₹{order.cost || "-"}</td>
+        <td>
+          <button className="btn primary" onClick={() => handlePrintClick(order)}>
+            Print
+          </button>
+        </td>
+        <td>
+          <button className="btn danger" onClick={() => handleDeleteOrder(order)}>
+            Delete
+          </button>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
+</table>
 
       {/* 🔹 Printer Selection Modal */}
       {printingOrder && (
