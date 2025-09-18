@@ -14,61 +14,88 @@ function Signup() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    setError(""); // reset error before each attempt
+    setError("");
+
     try {
       if (password.length < 6) {
         setError("Password must be at least 6 characters");
         return;
       }
+
       // Create Firebase Auth user
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
-      
+
       // Save shop info in Firestore
       await setDoc(doc(db, "ownerShops", userCred.user.uid), {
         shopName,
         email,
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       console.log("Signup success:", userCred.user.uid);
       navigate("/");
     } catch (err) {
-      console.error("Signup error:", err); // Detailed error in console
-      setError(err.message); // Show Firebase error on page
+      console.error("Signup error:", err);
+      setError(err.message);
     }
   };
 
   return (
-    <div className="auth-container">
-      <h2>Owner Signup</h2>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSignup}>
-        <input
-          type="text"
-          placeholder="Shop Name"
-          value={shopName}
-          onChange={(e) => setShopName(e.target.value)}
-          required
+    <div className="auth-wrapper">
+      {/* Left Section */}
+      <div className="auth-left">
+        <h1 className="brand-title">Printzy</h1>
+        <p className="brand-tagline">
+          Manage your print shop smarter, faster, and better.
+        </p>
+        <img
+          src="/illustration.svg"
+          alt="Illustration"
+          className="auth-illustration"
         />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password (min 6 chars)"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Signup</button>
-      </form>
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+      </div>
+
+      {/* Right Section */}
+      <div className="auth-right">
+        <div className="auth-card">
+          <h2 className="auth-title">Owner Signup</h2>
+          <p className="auth-subtitle">Create your shop account</p>
+
+          {error && <p className="error">{error}</p>}
+
+          <form onSubmit={handleSignup}>
+            <input
+              type="text"
+              placeholder="Shop Name"
+              value={shopName}
+              onChange={(e) => setShopName(e.target.value)}
+              required
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password (min 6 chars)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button type="submit">Signup</button>
+          </form>
+
+          <div className="auth-footer">
+            Already have an account?{" "}
+            <Link to="/login" className="signup-link">
+              Login
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

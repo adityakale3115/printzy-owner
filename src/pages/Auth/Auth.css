@@ -1,4 +1,4 @@
-/* Wrapper split screen */
+/* === Wrapper Split Screen === */
 .auth-wrapper {
   display: flex;
   min-height: 100vh;
@@ -6,7 +6,7 @@
   font-family: "Inter", sans-serif;
 }
 
-/* Left side (branding) */
+/* === Left Branding Section === */
 .auth-left {
   flex: 1;
   background: linear-gradient(135deg, #4f46e5, #6366f1);
@@ -26,7 +26,7 @@
 }
 
 .brand-tagline {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   max-width: 420px;
   line-height: 1.6;
   margin-bottom: 35px;
@@ -39,13 +39,13 @@
   animation: float 4s ease-in-out infinite;
 }
 
-/* Floating effect */
+/* Floating Effect */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
 }
 
-/* Right side (form) */
+/* === Right Signup Section === */
 .auth-right {
   flex: 1;
   display: flex;
@@ -74,7 +74,7 @@
 .auth-title {
   font-size: 1.8rem;
   font-weight: 700;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 .auth-subtitle {
@@ -83,7 +83,7 @@
   margin-bottom: 25px;
 }
 
-/* Inputs */
+/* === Inputs === */
 .auth-card input {
   width: 100%;
   padding: 14px 16px;
@@ -100,7 +100,7 @@
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
 }
 
-/* Button */
+/* === Button === */
 .auth-card button {
   width: 100%;
   padding: 14px 16px;
@@ -121,7 +121,7 @@
   box-shadow: 0 6px 15px rgba(79, 70, 229, 0.25);
 }
 
-/* Error message */
+/* === Error Message === */
 .error {
   background: #fee2e2;
   color: #b91c1c;
@@ -131,7 +131,7 @@
   font-size: 0.9rem;
 }
 
-/* Footer link */
+/* === Footer Link === */
 .auth-footer {
   margin-top: 20px;
   font-size: 0.9rem;
@@ -148,7 +148,7 @@
   text-decoration: underline;
 }
 
-/* Responsiveness */
+/* === Responsiveness === */
 @media (max-width: 900px) {
   .auth-wrapper {
     flex-direction: column;
