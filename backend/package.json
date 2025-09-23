@@ -19,6 +19,7 @@
     "node-fetch": "^2.7.0",
     "nodemon": "^3.1.10",
     "office-to-pdf": "^4.0.0",
+    "pdf-lib": "^1.17.1",
     "pdf-to-printer": "^5.6.0"
   }
 }
